@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @FocusState private var amountIsFocused: Bool
     
-    @State private var checkAmount: Double = 0
+    @State private var checkAmount: Double? = 0
     @State private var numberSelection: Int = 0
     @State private var tipSelection: Int = 0
     
@@ -21,7 +21,7 @@ struct ContentView: View {
         let numOfPeople = Double(numberSelection + 2)
         let tip = Double(tipSelection)
         
-        let grandTotal = checkAmount * (1 + (tip/100))
+        let grandTotal = (checkAmount ?? 0) * (1 + (tip/100))
         return grandTotal/numOfPeople
     }
     
@@ -30,6 +30,11 @@ struct ContentView: View {
             Form{
                 Section{
                     TextField("Bill amount", value: $checkAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                        .onChange(of: amountIsFocused){ editing in
+                            if editing{
+                                checkAmount = nil
+                            }
+                        }
                         .keyboardType(.decimalPad)
                         .focused($amountIsFocused)
                     
